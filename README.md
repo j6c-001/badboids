@@ -7,3 +7,45 @@ boids
 * hold the spacebar to anti-flock
 
 ![Screenshot](screenhot.png)
+
+Model definition looks like this:
+```
+class Wedge extends Model {
+  List getModel() {
+    return makeModel([
+      [
+        Colors.red,
+        [
+          [-2, 0, 0],
+          [2, 0, 0],
+          [0, 2, 0]
+        ]
+      ],
+      [
+        Colors.green,
+        [
+          [-2, 0, 0],
+          [2, 0, 0],
+          [1, 1, -6]
+        ]
+      ],
+      [
+        Colors.amber,
+        [
+          [-2, 0, 0],
+          [0, 2, 0],
+          [1, 1, -6]
+        ]
+      ],
+      [
+        Colors.blue,
+        [
+          [2, 0, 0],
+          [0, 2, 0],
+          [1, 1, -6]
+        ]
+      ]
+    ], false);
+  }
+}
+```
