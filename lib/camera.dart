@@ -11,7 +11,7 @@ class CameraWedge extends Component with ModelInstance {
 
   CameraWedge(this.owner) {
     model = Wedge();
-    scale =Vector3.all(50);
+    scale = Vector3.all(50);
   }
 
 

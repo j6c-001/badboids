@@ -12,12 +12,13 @@ class Boid extends Component with ModelInstance {
   Behavior? behavior;
   Vector3 velocity = Vector3.zero();
   Vector3 pos = Vector3.zero();
+  bool fear = false;
 
   final MyGame owner;
 
   Boid(this.owner) {
     model = Wedge();
-    scale = Vector3.all(3);
+    scale = Vector3.all(2);
     velocity = Vector3(-50, -50, -50) + Vector3.random() * 400;
   }
   @override
@@ -26,11 +27,9 @@ class Boid extends Component with ModelInstance {
   }
   @override
   void onGameResize(Vector2 size) {
-    pos.x = size.x * Random().nextDouble() - size.x / 2;
-    pos.y = size.y * Random().nextDouble() - size.y / 2;
-    pos.z = size.y * Random().nextDouble() - size.y / 2;
-
+    super.onGameResize(size);
     behavior?.size = Vector3(size.x, size.y, size.y) / 2;
+    reset();
   }
 
   @override
@@ -38,6 +37,17 @@ class Boid extends Component with ModelInstance {
     behavior?.update();
 
     pos += velocity * dt;
+  }
+
+  void reset() {
+
+    fear = false;
+    var size = behavior?.size ?? Vector3(1000,1000,1000);
+    pos.x = size.x * Random().nextDouble() - size.x / 2;
+    pos.y = size.y * Random().nextDouble() - size.y / 2;
+    pos.z = size.y * Random().nextDouble() - size.y / 2;
+
+
   }
 
   @override
@@ -119,7 +129,8 @@ class Behavior {
 
     pc /= _visibleBoids.length * 1.0;
 
-    return (pc - _boid.pos) * 0.01;
+    bool fear = _boid.owner.spaceDown;
+    return (pc - _boid.pos) * 0.01 * (fear ? -4.0 : 1.0);
   }
 
   Vector3 avoidOthers() {

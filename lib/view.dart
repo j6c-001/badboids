@@ -18,7 +18,9 @@ class ViewPoly {
 
 class View {
   Matrix4 matrix = Matrix4.zero();
-  List<ViewPoly> polys = List.generate(5000, (ii) => ViewPoly() );
+  List<ViewPoly> polys = List.generate(15000, (ii) => ViewPoly() );
+
+  Vector3 cam = Vector3.zero();
 
   int polyIndex = 0;
 
@@ -28,25 +30,24 @@ class View {
 
   void addPoly(Matrix4 modelMatrix, Poly poly) {
     final vp = polys[polyIndex++];
-    vp.distToCam = modelMatrix.transformed3(poly.centroid).z;
+    vp.distToCam = (cam - (modelMatrix.getTranslation() + poly.centroid)).length;
     vp.poly = poly;
     vp.mm = modelMatrix;
 
   }
 
   renderFrame(Canvas c) {
-   // polys.sort((a, b)=> a.distToCam > b.distToCam ? -1 : 1);
-   // mergeSort<ViewPoly>(polys, compare: (a, b)=> a.distToCam > b.distToCam ? 1 : -1);
+
+    mergeSort<ViewPoly>(polys, start: 0, end: polyIndex, compare: (a, b)=> a.distToCam > b.distToCam ? -1 : 1);
     for(int i = 0; i < polyIndex; i++) {
-     // if(polys[i].distToCam  < 0) {
-        polys[i].render(c, matrix);
-      //}
+      polys[i].render(c, matrix);
     }
     
     //c.drawRawPoints(pointMode, points, paint)
   }
 
   update(Vector3 camPosition, Vector3 targetPosition) {
+    cam = camPosition;
     final v = makeViewMatrix(camPosition, targetPosition, Vector3(0, -1, 0));
     final p = makePerspectiveMatrix(57.3 * 2 , 16/9, 1, -1);
      matrix = p * v;

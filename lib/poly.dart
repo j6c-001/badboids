@@ -17,6 +17,11 @@ class Poly {
 
 
   render(Canvas canvas, Matrix4 tx) {
+    var nearPlane = tx.transformed(Vector4(centroid.x, centroid.y, centroid.z, 1)).w;
+    if( nearPlane < 100) {
+      return;
+    }
+
     final pts = points
         .map((p) => tx.transformed(Vector4(p.x, p.y, p.z, 1)).normalized())
         .map((p) => Offset((p.x/p.w+1)*g_Display.dimensions.x/2, (p.y/p.w+1)*g_Display.dimensions.y/2))
