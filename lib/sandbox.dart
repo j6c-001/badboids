@@ -18,6 +18,6 @@ class Sandbox extends Component with ModelInstance {
 
   @override
   void render(Canvas c) {
-    prepareFrame(pos, Vector3(0, 0, 1), owner.view);
+    prepareFrame(pos, Vector3(0, 0, 1), owner.view,0);
   }
 }
