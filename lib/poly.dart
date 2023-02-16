@@ -41,10 +41,11 @@ class Poly {
   }
 }
 
-List<Poly> makeModel(List<List> polys, bool wireFrame) {
+List<Poly> makeModel(List<List> polys, bool wireFrame, {bool swap = false}) {
   return polys.map((poly) {
     final pts = poly[1].map<Vector3>((List<num> point) {
-      return Vector3(point[0] * 1.0, point[2] * 1.0, point[1] * 1.0);
+      return swap ? Vector3(point[0] * 1.0, point[2] * 1.0, point[1] * 1.0) :
+      Vector3(point[0] * 1.0, point[1] * 1.0, point[2] * 1.0);
     }).toList();
     final Color color = poly[0];
     return Poly(pts, color, wireFrame);

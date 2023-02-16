@@ -26,6 +26,7 @@ dependencies:
 
   flame: 1.1.1
   collection: 1.17.0
+  sliding_up_panel: ^2.0.0+1
 
 
   # The following adds the Cupertino Icons font to your application.

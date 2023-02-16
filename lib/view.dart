@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
+import 'main.dart';
 import 'poly.dart';
 
 final  Vector3 up = Vector3(0,-1,0);
@@ -50,7 +51,7 @@ class View {
   }
 
   renderFrame(Canvas c) {
-
+    cntPolys = polyIndex;
     mergeSort<ViewPoly>(polys, start: 0, end: polyIndex, compare: (a, b)=> a.distToCam > b.distToCam ? -1 : 1);
     for(int i = 0; i < polyIndex; i++) {
       polys[i].render(c, matrix);

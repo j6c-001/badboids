@@ -7,7 +7,10 @@ import 'package:boids/models.dart';
 import 'package:flame/components.dart';
 
 import 'main.dart';
-
+enum BoidType {
+  BOID_BIRDIE,
+  BOID_WEDGE
+}
 
 class Boid extends Component with ModelInstance {
   Vector3 velocity = Vector3.zero();
@@ -38,6 +41,17 @@ class Boid extends Component with ModelInstance {
 
     }
 
+    @override
+  void onRemove() {
+    super.onRemove();
+    owner.boids.remove(this);
+    int currentBucket = bi(pos);
+    owner.simData.xyzBuckets[currentBucket].remove(this.bucketNode);
+    countBoids--;
+    if(type == BoidType.BOID_BIRDIE) countBirdies--;
+    if(type == BoidType.BOID_WEDGE)  countWedges--;
+  }
+
     late BoidWrapper bucketNode;
 
     Vector3 steeringForce = Vector3.zero();
@@ -48,15 +62,19 @@ class Boid extends Component with ModelInstance {
 
     final MyGame owner;
 
+    BoidType type = BoidType.BOID_BIRDIE;
     Boid(this.owner)
     {
       bucketNode = BoidWrapper(this);
-
+      type = Random().nextBool() ? BoidType.BOID_BIRDIE : BoidType.BOID_WEDGE;
       owner.boids.add(this);
       owner.simData.add();
       owner.add(this);
-      model = Bird(); //Wedge();
-      scale = Vector3.all(2);
+      model = type == BoidType.BOID_BIRDIE ? Bird() : Wedge();
+      scale = Vector3.all(type == BoidType.BOID_BIRDIE ? 2 : 1);
+      countBoids++;
+      if(type == BoidType.BOID_BIRDIE) countBirdies++;
+      if(type == BoidType.BOID_WEDGE)  countWedges++;
 
       reset();
 
@@ -127,6 +145,7 @@ class Boid extends Component with ModelInstance {
     Vector3 matchVelocity = Vector3.zero();
     Vector3 avoidOthers = Vector3.zero();
 
+
     int cnt = 0;
     int acnt = 0;
 
@@ -135,16 +154,23 @@ class Boid extends Component with ModelInstance {
 
     int i = 0;;
     double d = 0;
+    int otherCnt = 0;
 
     while (i <vb.length && b != null && i < 100) {
       d = (b.boid.pos-pos).length2;
       if ( d > 0 && d < visibility*visibility) {
         cnt++;
-        aimForCenterOfMass.add(b.boid.pos);
-        matchVelocity.add(b.boid.velocity);
+        if(type == b.boid.type) {
+          aimForCenterOfMass.add(b.boid.pos);
+          matchVelocity.add(b.boid.velocity);
+        } else if (type == BoidType.BOID_BIRDIE) {
+          otherCnt++;
+          avoidOthers.add((b.boid.pos - pos) * otherCnt.toDouble());
+        }
+
         if ( d < 30 * 30) {
           acnt++;
-          avoidOthers.add(b.boid.pos);
+          avoidOthers.add((b.boid.pos - pos).normalized()/d);
         }
       }
 
@@ -163,7 +189,7 @@ class Boid extends Component with ModelInstance {
     }
 
     if (acnt > 0 ) {
-      Vector3 toAvoid= (avoidOthers / acnt.toDouble() - pos).normalized() * maxSpeed;
+      Vector3 toAvoid= avoidOthers.normalized() * maxSpeed;
       steeringForce.sub(limit(toAvoid - velocity) *  avoidOthersFactor);
     }
   }

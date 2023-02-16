@@ -135,7 +135,7 @@ class Bird extends Model {
         ]
       ]
 
-    ], false);
+    ], false, swap: true);
   }
 }
 
