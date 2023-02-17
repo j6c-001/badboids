@@ -2,7 +2,6 @@ import 'package:boids/view.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 
-import 'main.dart';
 import 'models.dart';
 
 class Track with ModelInstance {
@@ -10,7 +9,7 @@ class Track with ModelInstance {
   double angle = 0;
 
   Track() {
-    model = TrackModel1();
+    //model = TrackModel1();
     scale = Vector3.all(1);
   }
 

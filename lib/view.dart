@@ -37,6 +37,7 @@ class View {
 
   prepareFrame() {
     polyIndex = 0;
+    cntPolysRendered = 0;
   }
 
   void addPoly(Matrix4 modelMatrix, Poly poly) {

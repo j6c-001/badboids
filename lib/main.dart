@@ -26,14 +26,18 @@ void main() {
 }
 
 double fps = 0;
-int numberOfBoids = 1000;
+int numberOfBoids = 100;
 int cntPolys = 0;
+int cntPolysRendered = 0;
 int countBoids = 0;
 int countWedges = 0;
 int countBirdies = 0;
 int visibility = 150;
 double maxSpeed = 100;
 double maxForce = .005;
+
+double maxBoids = 5000;
+double maxViewingDistance = 5000;
 
 
 double cohesionFactor =  0.50;
@@ -175,7 +179,7 @@ class BoidSettingsState extends State<BoidSettings> {
                        Text('  Settings', style: textStyleWhiteBold)
                      ]
                  ),
-                Text( 'Boids: $countBoids ${fps.round()}fps Polys: $cntPolys', style: textStyleWhite),
+                Text( 'Boids: $countBoids ${fps.round()}fps Polys: $cntPolysRendered/$cntPolys', style: textStyleWhite),
                 Text('Birdies: $countBirdies Wedges: $countWedges', style: textStyleWhite),
 
                 Row(children: [Text('Alignment', style: textStyleWhite),Slider(
@@ -219,14 +223,16 @@ class BoidSettingsState extends State<BoidSettings> {
 
                 )]),
 
-                Row(children: [Text('Boids', style: textStyleWhite),Slider(
-                  value: numberOfBoids.toDouble(),
+                Row(children: [Text('Boids', style: textStyleWhite),
+                  Slider(
+                  value: log(numberOfBoids)/(log(maxBoids)/99)+1,
                   label: 'Boids: $numberOfBoids',
-                  max:5000,
+                  max: 100,
                   min: 1,
                   onChanged: (double v) {
                     setState(() {
-                      numberOfBoids = v.toInt();
+                      boidNumberDomain = v;
+                      numberOfBoids = pow(exp(log(maxBoids)/99), v-1).ceil();
                     });
                   },
                 )]),

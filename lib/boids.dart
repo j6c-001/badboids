@@ -9,7 +9,7 @@ import 'package:flame/components.dart';
 import 'main.dart';
 enum BoidType {
   BOID_BIRDIE,
-  BOID_WEDGE
+  BOID_WEDGE,BOID_GEM
 }
 
 class Boid extends Component with ModelInstance {
@@ -70,7 +70,7 @@ class Boid extends Component with ModelInstance {
       owner.boids.add(this);
       owner.simData.add();
       owner.add(this);
-      model = type == BoidType.BOID_BIRDIE ? Bird() : Wedge();
+      model =  type == BoidType.BOID_BIRDIE ? Bird() : Wedge();
       scale = Vector3.all(type == BoidType.BOID_BIRDIE ? 2 : 1);
       countBoids++;
       if(type == BoidType.BOID_BIRDIE) countBirdies++;
@@ -94,6 +94,8 @@ class Boid extends Component with ModelInstance {
       Vector3 p = pos;
       pos += velocity * dt;
       updateBuckets(p, pos);
+
+     // angle += .1;
 
     }
 
@@ -152,7 +154,7 @@ class Boid extends Component with ModelInstance {
     final vb = visibleBoids;
     BoidWrapper? b = vb.first;
 
-    int i = 0;;
+    int i = 0;
     double d = 0;
     int otherCnt = 0;
 

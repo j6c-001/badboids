@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:boids/display.dart';
+import 'package:boids/main.dart';
 import 'package:flame/components.dart';
 
 class Poly {
@@ -38,6 +39,8 @@ class Poly {
     path.reset();
     path.addPolygon(screenCoords, true);
     canvas.drawPath(path, paint);
+
+    cntPolysRendered++;
   }
 }
 
