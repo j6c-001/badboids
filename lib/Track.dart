@@ -1,5 +1,4 @@
 import 'package:boids/view.dart';
-import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 
 import 'models.dart';

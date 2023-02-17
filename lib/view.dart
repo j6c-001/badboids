@@ -28,7 +28,7 @@ class ViewPoly extends LinkedListEntry<ViewPoly> {
 class View {
   Matrix4 matrix = Matrix4.zero();
   Matrix4 view = Matrix4.zero();
-  List<ViewPoly> polys = List.generate(50000, (ii) => ViewPoly() );
+  List<ViewPoly> polys = List.generate(maxPolys, (ii) => ViewPoly() );
   Vector3 cam = Vector3.zero();
   Vector3 camTemp = Vector3.zero();
 

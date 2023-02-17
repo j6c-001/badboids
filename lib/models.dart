@@ -8,6 +8,11 @@ import 'package:flutter/material.dart';
 
 import 'view.dart';
 
+
+final aWedge = Wedge();
+final aGem = Gem();
+final aBird = Bird();
+
 class Model {
   Model() {
     polys = getModel();
@@ -23,7 +28,7 @@ class Model {
 
 
 mixin ModelInstance {
-  late final Model model;
+  late Model model;
   final Matrix4 mm = Matrix4.zero();
 
   Vector3 scale = Vector3(1, 1, 1);

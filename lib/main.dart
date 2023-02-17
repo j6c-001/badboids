@@ -32,13 +32,19 @@ int cntPolysRendered = 0;
 int countBoids = 0;
 int countWedges = 0;
 int countBirdies = 0;
+int countGems = 0;
+
 int visibility = 150;
 double maxSpeed = 100;
 double maxForce = .005;
 
+
+double mixBirdies = .3;
+double mixWedges = mixBirdies + .3;
+
 double maxBoids = 5000;
 double maxViewingDistance = 5000;
-
+int maxPolys = maxBoids.toInt() * 16;
 
 double cohesionFactor =  0.50;
 double alignmentFactor = 0.85;
@@ -180,14 +186,13 @@ class BoidSettingsState extends State<BoidSettings> {
                      ]
                  ),
                 Text( 'Boids: $countBoids ${fps.round()}fps Polys: $cntPolysRendered/$cntPolys', style: textStyleWhite),
-                Text('Birdies: $countBirdies Wedges: $countWedges', style: textStyleWhite),
+                Text('(B)irdies: $countBirdies (W)edges: $countWedges (G)ems: $countGems' , style: textStyleWhite),
 
                 Row(children: [Text('Alignment', style: textStyleWhite),Slider(
                   value: alignmentFactor,
                   max: 3,
                   min: 0,
                   divisions: 100,
-                  label: 'Alignment $alignmentFactor',
                   onChanged: (double v) {
                     setState(() {
                       alignmentFactor = v;
@@ -200,7 +205,6 @@ class BoidSettingsState extends State<BoidSettings> {
                   max: 3,
                   min: 0,
                   divisions: 100,
-                  label: 'Avoidance $avoidOthersFactor',
                   onChanged: (double v) {
                     setState(() {
                       avoidOthersFactor = v;
@@ -214,7 +218,6 @@ class BoidSettingsState extends State<BoidSettings> {
                   max: 3,
                   min: 0,
                   divisions: 100,
-                  label: 'Cohesion $cohesionFactor',
                   onChanged: (double v) {
                     setState(() {
                       cohesionFactor = v;
@@ -231,18 +234,36 @@ class BoidSettingsState extends State<BoidSettings> {
                   min: 1,
                   onChanged: (double v) {
                     setState(() {
-                      boidNumberDomain = v;
                       numberOfBoids = pow(exp(log(maxBoids)/99), v-1).ceil();
                     });
                   },
                 )]),
+
+                Row(children: [Text('Mix', style: textStyleWhite),
+                  RangeSlider(
+                    inactiveColor: Colors.deepOrange,
+                    activeColor: Colors.tealAccent,
+                    values: RangeValues(mixBirdies, mixWedges),
+                    labels: RangeLabels('B:${(mixBirdies*100).round()}%  W:${(mixWedges*100).round()}% G:${((1-mixWedges)*100).round()}% ', 'B:${(mixBirdies*100).round()}% W:${(mixWedges*100).round()}% G:${((1-mixWedges)*100).round()}% '),
+                    onChangeEnd: (RangeValues v) {
+                      myGame.needsMixReset = true;
+                    },
+                    onChanged: (RangeValues v) {
+                      setState(() {
+                        mixBirdies = v.start;
+                        mixWedges = v.end;
+                      });
+                    },
+                  )]),
+
+
                 Row(children: [Text('Zoom', style: textStyleWhite),Slider(
-                  value: myGame.viewDistance,
-                  max:5000,
-                  min: 2,
+                  value: log(myGame.viewDistance)/(log(maxViewingDistance)/99)+1,
+                  max: 100,
+                  min: 1,
                   onChanged: (double v) {
                     setState(() {
-                      myGame.viewDistance = v;
+                      myGame.viewDistance =  pow(exp(log(maxViewingDistance)/99), v-1).ceilToDouble();
                     });
                   },
                 )]),
@@ -251,7 +272,7 @@ class BoidSettingsState extends State<BoidSettings> {
                   children: [
                     IconButton(
                         tooltip: 'Switch between follow or fixed camera',
-                        icon: Icon(Icons.camera_outlined),
+                        icon: Icon(boidCameraOnOff ? Icons.camera_outlined : Icons.camera),
                         color: Colors.deepOrange,
                         onPressed: () {
                         boidCameraOnOff = !boidCameraOnOff;
@@ -319,6 +340,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
   bool play = true;
 
   bool needsReset = false;
+  bool needsMixReset = false;
 
   MyGame();
 
@@ -350,7 +372,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
 
   final List<Boid> boids = [];
 
-  final simData = SimData();
+  final boidBuckets = BoidBucket();
 
   @override
   Future<void>? onLoad() {
@@ -394,6 +416,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
       reset();
     }
 
+
     view.update(pos, target);
     camera.update(dt);
 
@@ -408,7 +431,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
     } else {
       pos.x = viewDistance * cos(theta);
       pos.z = viewDistance * sin(theta);
-      pos.y = 000;
+      pos.y = 0;
       Vector3 newTarget = cameraTargetBoid.pos;
       target = target = (target * .95) + (newTarget * .05);
     }
@@ -420,6 +443,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
         c.update(dt);
       }
     }
+   needsMixReset = false;
 
    settingsState?.setState(() {});
 
@@ -450,16 +474,26 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
   }
 
 }
-class SimData {
- List<LinkedList<BoidWrapper>> xyzBuckets = List.filled(100 * 100 * 100, LinkedList<BoidWrapper>() );
 
+final bucketSizer = (1500 * 2 ~/ visibility) +1;
+class BoidBucket {
 
-  void add() {
-
+  static int bk(double v) {
+    return v ~/ visibility;
   }
 
-  void remove() {
+  static int indexFromXYZ(Vector3 v) {
+    int x = v.x < 0 ? bk(v.x).abs() : bucketSizer ~/2 + bk(v.x);
+    int y = v.y < 0 ? bk(v.y).abs() : bucketSizer ~/2 + bk(v.y);
+    int z = v.z < 0 ? bk(v.z).abs() : bucketSizer ~/2 + bk(v.z);
 
+    return x + bucketSizer * y + bucketSizer * bucketSizer * z;
+  }
+
+ List<LinkedList<BoidWrapper>> xyzBuckets = List.filled(bucketSizer * bucketSizer * bucketSizer, LinkedList<BoidWrapper>() );
+  void remove(Boid b) {
+    int currentBucket = indexFromXYZ(b.pos);
+    xyzBuckets[currentBucket].remove(b.bucketNode);
   }
 }
 
