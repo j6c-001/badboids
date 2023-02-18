@@ -2,7 +2,6 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 

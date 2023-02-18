@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:boids/boids.dart';
 import 'package:boids/display.dart';
+import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
-import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 
 import 'Track.dart';
@@ -453,9 +453,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
 
     if (play) {
       for(Component c in children) {
-        if(!c.shouldRemove) {
           c.update(dt);
-        }
       }
     }
    needsMixReset = false;
@@ -478,11 +476,8 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
   @override
   void render(Canvas canvas) {
    view.prepareFrame();
-    //track.render(canvas, view);
     for(Component c in children) {
-      if(!c.shouldRemove) {
         c.render(canvas);
-      }
     };
     view.renderFrame(canvas);
   }
@@ -495,6 +490,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
 }
 
 final bucketSizer = (1500 * 2 ~/ visibility) +1;
+final maxBuckets = bucketSizer * bucketSizer * bucketSizer;
 class BoidBucket {
 
   static int bk(double v) {
@@ -506,7 +502,9 @@ class BoidBucket {
     int y = v.y < 0 ? bk(v.y).abs() : bucketSizer ~/2 + bk(v.y);
     int z = v.z < 0 ? bk(v.z).abs() : bucketSizer ~/2 + bk(v.z);
 
-    return x + bucketSizer * y + bucketSizer * bucketSizer * z;
+    final index = x + bucketSizer * y + bucketSizer * bucketSizer * z;
+
+    return index < maxBuckets ? index : 0;
   }
 
  List<LinkedList<BoidWrapper>> xyzBuckets = List.filled(bucketSizer * bucketSizer * bucketSizer, LinkedList<BoidWrapper>() );

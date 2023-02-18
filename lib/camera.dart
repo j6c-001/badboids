@@ -1,8 +1,6 @@
 import 'package:boids/view.dart';
-import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 
-import 'main.dart';
 import 'models.dart';
 
 class CameraWedge  with ModelInstance {
