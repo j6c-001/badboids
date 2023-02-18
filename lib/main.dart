@@ -161,14 +161,14 @@ class BoidSettingsState extends State<BoidSettings> {
     return Material(
         color: Colors.transparent,
         child: Container(
+          width: 280.0,
           decoration: BoxDecoration(
               color: Colors.deepPurple,
               borderRadius: BorderRadius.circular(4)
           ),
           child: Padding(
-              padding: EdgeInsets.all(3),
+              padding: EdgeInsets.all(10),
               child:Column(
-              
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -182,13 +182,15 @@ class BoidSettingsState extends State<BoidSettings> {
                            },
                            icon: Icon(Icons.close_sharp)
                        ),
-                       Text('  Settings', style: textStyleWhiteBold)
+                       Text('Settings', style: textStyleWhiteBold)
                      ]
                  ),
                 Text( 'Boids: $countBoids ${fps.round()}fps Polys: $cntPolysRendered/$cntPolys', style: textStyleWhite),
-                Text('(B)irdies: $countBirdies (W)edges: $countWedges (G)ems: $countGems' , style: textStyleWhite),
+                Text('Birdies: $countBirdies Wedges: $countWedges Gems: $countGems' , style: textStyleWhite),
 
-                Row(children: [Text('Alignment', style: textStyleWhite),Slider(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Alignment', style: textStyleWhite),Slider(
                   value: alignmentFactor,
                   max: 3,
                   min: 0,
@@ -200,7 +202,9 @@ class BoidSettingsState extends State<BoidSettings> {
                   },
 
                 )]),
-                Row(children: [Text('Avoidance', style: textStyleWhite),Slider(
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Avoidance', style: textStyleWhite),Slider(
                   value: avoidOthersFactor,
                   max: 3,
                   min: 0,
@@ -213,7 +217,9 @@ class BoidSettingsState extends State<BoidSettings> {
 
                 )]),
 
-                Row(children: [Text('Cohesion', style: textStyleWhite),Slider(
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Cohesion', style: textStyleWhite),Slider(
                   value: cohesionFactor,
                   max: 3,
                   min: 0,
@@ -226,7 +232,9 @@ class BoidSettingsState extends State<BoidSettings> {
 
                 )]),
 
-                Row(children: [Text('Boids', style: textStyleWhite),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Boids', style: textStyleWhite),
                   Slider(
                   value: log(numberOfBoids)/(log(maxBoids)/99)+1,
                   label: 'Boids: $numberOfBoids',
@@ -239,25 +247,30 @@ class BoidSettingsState extends State<BoidSettings> {
                   },
                 )]),
 
-                Row(children: [Text('Mix', style: textStyleWhite),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Mix b/w/g', style: textStyleWhite),
                   RangeSlider(
                     inactiveColor: Colors.deepOrange,
                     activeColor: Colors.tealAccent,
                     values: RangeValues(mixBirdies, mixWedges),
                     labels: RangeLabels('B:${(mixBirdies*100).round()}%  W:${(mixWedges*100).round()}% G:${((1-mixWedges)*100).round()}% ', 'B:${(mixBirdies*100).round()}% W:${(mixWedges*100).round()}% G:${((1-mixWedges)*100).round()}% '),
                     onChangeEnd: (RangeValues v) {
-                      myGame.needsMixReset = true;
+
                     },
                     onChanged: (RangeValues v) {
                       setState(() {
                         mixBirdies = v.start;
                         mixWedges = v.end;
+                        myGame.needsMixReset = true;
                       });
                     },
                   )]),
 
 
-                Row(children: [Text('Zoom', style: textStyleWhite),Slider(
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Zoom', style: textStyleWhite),Slider(
                   value: log(myGame.viewDistance)/(log(maxViewingDistance)/99)+1,
                   max: 100,
                   min: 1,
@@ -407,7 +420,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
     }
 
     while (ba < 0) {
-      Component b = children.last;
+      Boid b = boids[boids.length+ba];
       remove(b);
       ba++;
     }
@@ -440,7 +453,9 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
 
     if (play) {
       for(Component c in children) {
-        c.update(dt);
+        if(!c.shouldRemove) {
+          c.update(dt);
+        }
       }
     }
    needsMixReset = false;
@@ -464,7 +479,11 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
   void render(Canvas canvas) {
    view.prepareFrame();
     //track.render(canvas, view);
-    children.forEach((c) => c.render(canvas));
+    for(Component c in children) {
+      if(!c.shouldRemove) {
+        c.render(canvas);
+      }
+    };
     view.renderFrame(canvas);
   }
 
