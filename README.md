@@ -1,10 +1,9 @@
-# badboids
-
-boids
+# Bad Boids -- Named in honour of the classic teaching example.
 
 ## A little flocking demo to play with defining simple 3d models, and drawing them.
 * Hit the settings icom to control folocking parameters # boids, zoom and camera controls.
 
+Demo: https://j6c-001.github.io/badboids
 
 ![Screenshot](bb1.png)
 
