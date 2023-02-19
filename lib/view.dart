@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
-import 'main.dart';
+import 'globals.dart';
 import 'poly.dart';
 
 final  Vector3 up = Vector3(0,-1,0);

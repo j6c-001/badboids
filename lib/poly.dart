@@ -1,8 +1,9 @@
 import 'dart:ui';
 
 import 'package:boids/display.dart';
-import 'package:boids/main.dart';
 import 'package:flame/components.dart';
+
+import 'globals.dart';
 
 class Poly {
   final List<Vector3> points;

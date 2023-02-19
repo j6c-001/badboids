@@ -1,3 +1,4 @@
+
 import 'dart:collection';
 import 'dart:math';
 
@@ -6,17 +7,15 @@ import 'package:boids/display.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'Track.dart';
+import 'globals.dart';
+import 'ui/widgets.dart';
 import 'camera.dart';
 import 'view.dart';
 
-// shock horror of gloabl variables
-var myGame;
-var settingsState;
-var settingsPanelState;
 
 void main() {
    myGame = MyGame();
@@ -24,39 +23,6 @@ void main() {
     FlutterApp()
   );
 }
-
-double fps = 0;
-int numberOfBoids = 100;
-int cntPolys = 0;
-int cntPolysRendered = 0;
-int countBoids = 0;
-int countWedges = 0;
-int countBirdies = 0;
-int countGems = 0;
-
-int visibility = 150;
-double maxSpeed = 100;
-double maxForce = .005;
-
-
-double mixBirdies = .3;
-double mixWedges = mixBirdies + .3;
-
-double maxBoids = 5000;
-double maxViewingDistance = 5000;
-int maxPolys = maxBoids.toInt() * 16;
-
-double cohesionFactor =  0.50;
-double alignmentFactor = 0.85;
-double avoidOthersFactor = 1.70;
-
-int cameraBoidIndex = 0;
-double cameraDirection = -1.0;
-bool boidCameraOnOff = false;
-bool flyCamOn = false;
-
-final textStyleWhiteBold = TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
-final textStyleWhite = TextStyle(color: Colors.white);
 
 
 class FlutterApp extends StatelessWidget {
@@ -89,258 +55,6 @@ class FlutterApp extends StatelessWidget {
 }
 
 
-
-class SettingsWidget extends StatefulWidget  {
-  SettingsWidget({Key? key}) : super(key: key);
-  @override
-  SettingsWidgetState createState()  {
-    settingsPanelState = SettingsWidgetState();
-    return settingsPanelState;
-  }
-
-}
-
-class SettingsWidgetState extends State<SettingsWidget> {
-
-  OverlayEntry? settingsButton;
-  OverlayEntry? settingsPanel;
-
-
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_)=>showSettings());
-  }
-
-
-  bool settingsOpen = false;
-  void showSettings() {
-    final o = Overlay.of(context);
-
-    settingsPanel =  OverlayEntry(builder: (ctx)=>Positioned(left: 20, top: 20, child: BoidSettings() ),maintainState: true);
-    settingsButton = OverlayEntry(builder: (ctx)=>Positioned(left: 20, top: 20, child:  IconButton(
-        color: Colors.deepOrange,
-        icon: Icon(Icons.settings), onPressed: (){
-       settingsButton?.remove();
-       o.insert(settingsPanel!);
-      }), ), maintainState: true);
-    o.insert(settingsButton!);
-  }
-
-
-  void swap() {
-    if (settingsPanel?.mounted == true) {
-      settingsState = null;
-      settingsPanel?.remove();
-      final o = Overlay.of(context);
-      o.insert(settingsButton!);
-    }
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Text('');
-  }
-}
-
-
-class BoidSettings extends StatefulWidget {
-  BoidSettings({Key? key}) : super(key: key);
-  @override
-  BoidSettingsState createState()  {
-    settingsState = BoidSettingsState();
-    return settingsState;
-  }
-
-}
-
-
-class BoidSettingsState extends State<BoidSettings> {
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-        color: Colors.transparent,
-        child: Container(
-          width: 280.0,
-          decoration: BoxDecoration(
-              color: Colors.deepPurple,
-              borderRadius: BorderRadius.circular(4)
-          ),
-          child: Padding(
-              padding: EdgeInsets.all(10),
-              child:Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: <Widget>[
-                 Row(
-                     children: [
-                       IconButton(
-                           color: Colors.deepOrange,
-                           onPressed: () {
-                             settingsPanelState.swap();
-                           },
-                           icon: Icon(Icons.close_sharp)
-                       ),
-                       Text('Settings', style: textStyleWhiteBold)
-                     ]
-                 ),
-                Text( 'Boids: $countBoids ${fps.round()}fps Polys: $cntPolysRendered/$cntPolys', style: textStyleWhite),
-                Text('Birdies: $countBirdies Wedges: $countWedges Gems: $countGems' , style: textStyleWhite),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Alignment', style: textStyleWhite),Slider(
-                  value: alignmentFactor,
-                  max: 3,
-                  min: 0,
-                  divisions: 100,
-                  onChanged: (double v) {
-                    setState(() {
-                      alignmentFactor = v;
-                    });
-                  },
-
-                )]),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Avoidance', style: textStyleWhite),Slider(
-                  value: avoidOthersFactor,
-                  max: 3,
-                  min: 0,
-                  divisions: 100,
-                  onChanged: (double v) {
-                    setState(() {
-                      avoidOthersFactor = v;
-                    });
-                  },
-
-                )]),
-
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Cohesion', style: textStyleWhite),Slider(
-                  value: cohesionFactor,
-                  max: 3,
-                  min: 0,
-                  divisions: 100,
-                  onChanged: (double v) {
-                    setState(() {
-                      cohesionFactor = v;
-                    });
-                  },
-
-                )]),
-
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Boids', style: textStyleWhite),
-                  Slider(
-                  value: log(numberOfBoids)/(log(maxBoids)/99)+1,
-                  label: 'Boids: $numberOfBoids',
-                  max: 100,
-                  min: 1,
-                  onChanged: (double v) {
-                    setState(() {
-                      numberOfBoids = pow(exp(log(maxBoids)/99), v-1).ceil();
-                    });
-                  },
-                )]),
-
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Mix b/w/g', style: textStyleWhite),
-                  RangeSlider(
-                    inactiveColor: Colors.deepOrange,
-                    activeColor: Colors.tealAccent,
-                    values: RangeValues(mixBirdies, mixWedges),
-                    labels: RangeLabels('B:${(mixBirdies*100).round()}%  W:${(mixWedges*100).round()}% G:${((1-mixWedges)*100).round()}% ', 'B:${(mixBirdies*100).round()}% W:${(mixWedges*100).round()}% G:${((1-mixWedges)*100).round()}% '),
-                    onChangeEnd: (RangeValues v) {
-
-                    },
-                    onChanged: (RangeValues v) {
-                      setState(() {
-                        mixBirdies = v.start;
-                        mixWedges = v.end;
-                        myGame.needsMixReset = true;
-                      });
-                    },
-                  )]),
-
-
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Zoom', style: textStyleWhite),Slider(
-                  value: log(myGame.viewDistance)/(log(maxViewingDistance)/99)+1,
-                  max: 100,
-                  min: 1,
-                  onChanged: (double v) {
-                    setState(() {
-                      myGame.viewDistance =  pow(exp(log(maxViewingDistance)/99), v-1).ceilToDouble();
-                    });
-                  },
-                )]),
-
-                Row(
-                  children: [
-                    IconButton(
-                        tooltip: 'Switch between follow or fixed camera',
-                        icon: Icon(boidCameraOnOff ? Icons.camera_outlined : Icons.camera),
-                        color: Colors.deepOrange,
-                        onPressed: () {
-                        boidCameraOnOff = !boidCameraOnOff;
-                    }),
-                    IconButton(
-                        tooltip: 'Point camera at a random boid',
-                        icon: Icon(Icons.cameraswitch_sharp),
-                        color: Colors.deepOrange,
-                        onPressed: () {
-                          cameraBoidIndex = Random().nextInt(numberOfBoids);
-                    }),
-                    IconButton(
-                        tooltip: 'Switch to ' + (cameraDirection < 0 ? 'back facing camera' : 'front facing camera'),
-                        icon: Icon(cameraDirection < 0 ? Icons.arrow_forward_sharp : Icons.arrow_back_sharp),
-                        color: Colors.deepOrange,
-                        onPressed: () {
-                          cameraDirection *= -1.0;
-                    }),
-
-                    IconButton(
-                        tooltip: 'Play Simulation',
-                        icon: Icon(Icons.play_arrow),
-                        color: Colors.deepOrange,
-                        disabledColor: Colors.grey,
-                        onPressed: myGame.play ? null : () {
-                          myGame.play = true;
-                        }
-                    ),
-                    IconButton(
-                        tooltip: 'Pause Simulation',
-                        icon: Icon(Icons.pause),
-                        disabledColor: Colors.grey,
-                        color: Colors.deepOrange,
-                        onPressed: myGame.play ? () {
-                          myGame.play = false;
-                        } : null
-                    ),
-                    IconButton(
-                        tooltip: 'Reset Simulation',
-                        icon: Icon(Icons.lock_reset),
-                        color: Colors.deepOrange,
-                        onPressed: () {
-                          myGame.needsReset = true;
-                        }
-                    ),
-
-                  ],
-                ),
-
-              ]),
-        )));
-  }
-}
-
-
 class MyGame extends Component with Game, PanDetector, KeyboardEvents {
   View view = View();
   Matrix4 cview = Matrix4.zero();
@@ -348,7 +62,6 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
   Vector3 pos = Vector3(1500, 1500, 1000);
 
   CameraWedge camera = CameraWedge();
-  Track track = Track();
 
   bool play = true;
 

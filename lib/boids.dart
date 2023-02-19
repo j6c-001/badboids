@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:boids/models.dart';
 import 'package:flame/components.dart';
 
+import 'globals.dart';
 import 'main.dart';
 enum BoidType {
   BOID_BIRDIE,
