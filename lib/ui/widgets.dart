@@ -265,7 +265,7 @@ class BoidSettingsState extends State<BoidSettings> {
                       children: [
                         Text( 'Boids: $countBoids', style: textStyleWhite),
                         Text( 'FPS: ${fps.toStringAsFixed(1)}', style: textStyleWhite),
-                        Text( 'Polys: $cntPolysRendered/$cntPolys', style: textStyleWhite)
+                        Text( 'Polys: ${myGame.view.cntPolysRendered}/${myGame.view.cntPolys}', style: textStyleWhite)
                       ],
                     ),
                     Row(

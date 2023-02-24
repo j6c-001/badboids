@@ -5,7 +5,7 @@ import 'dart:ui';
 
 import 'package:boids/models.dart';
 import 'package:flame/components.dart';
-
+import 'package:simple3d/simple3d.dart';
 import 'globals.dart';
 import 'main.dart';
 enum BoidType {
@@ -14,7 +14,9 @@ enum BoidType {
   BOID_GEM
 }
 
-class Boid extends Component with ModelInstance {
+class Boid extends Component  {
+
+  VertexModelInstance modelInstance = VertexModelInstance();
   Vector3 velocity = Vector3.zero();
   Vector3 pos = Vector3.zero();
 
@@ -27,12 +29,12 @@ class Boid extends Component with ModelInstance {
 
   Boid(this.owner)
   {
+
     bucketNode = BoidWrapper(this);
     type = selectType();
     owner.boids.add(this);
     owner.add(this);
-    model =  buildModel();
-    scale = Vector3.all(type == BoidType.BOID_BIRDIE ? 2 : 1);
+    modelInstance.model =  buildModel();
     countBoids++;
     doTypeAccounting(1);
     reset();
@@ -59,7 +61,7 @@ class Boid extends Component with ModelInstance {
     return BoidType.BOID_GEM;
   }
 
-  Model buildModel() {
+  VertexModel buildModel() {
     if (type == BoidType.BOID_WEDGE) {
       return aWedge;
     } else if(type == BoidType.BOID_BIRDIE) {
@@ -121,9 +123,11 @@ class Boid extends Component with ModelInstance {
       doTypeAccounting(-1);
       type =  newType;
       doTypeAccounting(1);
-      model = buildModel();
+      modelInstance.model = buildModel();
     }
   }
+
+
   void reset() {
 
     fear = false;
@@ -143,7 +147,7 @@ class Boid extends Component with ModelInstance {
 
   @override
   void render(Canvas c) {
-    prepareFrame(pos, velocity, owner.view, angle);
+    modelInstance.prepareFrame(pos.x,pos.y, pos.z, velocity.x, velocity.y, velocity.z, owner.view, angle);
   }
 
   Vector3 bounds() {

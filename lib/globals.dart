@@ -24,7 +24,7 @@ int countWedges = 0;
 int countBirdies = 0;
 int countGems = 0;
 
-int numberOfBoids = 100;
+int numberOfBoids = 1;
 int visibility = 150;
 double maxSpeed = 100;
 double maxForce = .005;

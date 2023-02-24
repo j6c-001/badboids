@@ -1,9 +1,13 @@
-import 'package:boids/view.dart';
+
+import 'dart:ui';
+
 import 'package:flame/extensions.dart';
+import 'package:simple3d/simple3d.dart';
+
 
 import 'models.dart';
 
-class CameraWedge  with ModelInstance {
+class CameraWedge {
   Vector3 pos = Vector3.zero();
   Vector3 camPos = Vector3.zero();
 
@@ -13,14 +17,13 @@ class CameraWedge  with ModelInstance {
   double deltaAngleY = 0;
   double deltaAngleZ = 0;
 
-  Vector3 facing = Vector3(0,0,1);
+  Vector3 heading = Vector3(0,0,1);
   double speed = 1;
 
   bool faster = false;
-
+  VertexModelInstance modelInstance = VertexModelInstance();
   CameraWedge() {
-    model = Wedge();
-    scale = Vector3.all(1);
+    modelInstance.model = aWedge;
   }
 
 
@@ -31,16 +34,16 @@ class CameraWedge  with ModelInstance {
       speed *= .99;
     }
 
-    Quaternion.axisAngle(Vector3(0,1,0), deltaAngleY * .01).rotate(facing);
-    Quaternion.axisAngle(Vector3(1,0,0), deltaAngleZ * .03).rotate(facing);
+    Quaternion.axisAngle(Vector3(0,1,0), deltaAngleY * .01).rotate(heading);
+    Quaternion.axisAngle(Vector3(1,0,0), deltaAngleZ * .03).rotate(heading);
 
 
-      pos += facing * 10 * speed * dt;
+      pos += heading * 10 * speed * dt;
 
-      camPos = pos + facing.normalized() * 10;
+      camPos = pos + heading.normalized() * 10;
   }
 
   void render(Canvas c, View view) {
-    prepareFrame(pos, facing , view,0 ) ;
+   // modelInstance.prepareFrame(pos.x,pos.y,pos.z, heading.x, heading.y, heading.z , view,0 ) ;
   }
 }

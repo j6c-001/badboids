@@ -10,11 +10,12 @@ import 'package:flame/input.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:simple3d/display.dart';
+import 'package:simple3d/simple3d.dart';
 
 import 'globals.dart';
 import 'ui/widgets.dart';
 import 'camera.dart';
-import 'view.dart';
 
 
 void main() {
@@ -56,9 +57,9 @@ class FlutterApp extends StatelessWidget {
 
 
 class MyGame extends Component with Game, PanDetector, KeyboardEvents {
-  View view = View();
+  View view = View(60000,100, 100);
   Matrix4 cview = Matrix4.zero();
-  Vector3 target = Vector3(-00, -00, 0);
+  Vector3 target = Vector3.zero();
   Vector3 pos = Vector3(1500, 1500, 1000);
 
   CameraWedge camera = CameraWedge();
@@ -70,9 +71,10 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
 
   MyGame();
 
-  onGameResize(Vector2 size) {
+  onGameResize( size) {
     super.onGameResize(size);
-    g_Display.dimensions.setFrom(size);
+    view.dimensions.x = size.x;
+    view.dimensions.y = size.y;
     setMounted();
   }
 
@@ -142,8 +144,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
       reset();
     }
 
-
-    view.update(pos, target);
+    view.update(pos.x, pos.y, pos.z, target.x, target.y, target.z);
     camera.update(dt);
 
     Boid cameraTargetBoid = cameraBoidIndex < boids.length ? boids[cameraBoidIndex] : boids.last;
@@ -159,7 +160,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
       pos.z = viewDistance * sin(theta);
       pos.y = 0;
       Vector3 newTarget = cameraTargetBoid.pos;
-      target = target = (target * .95) + (newTarget * .05);
+      target = (target * .95) + (newTarget * .05);
     }
     camera.deltaAngleY = 0;
     camera.deltaAngleZ = 0;
