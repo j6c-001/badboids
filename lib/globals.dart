@@ -1,11 +1,10 @@
 
 // shock horror of global variables
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
+import 'my-game.dart';
+late MyGame myGame;
 
-var myGame;
 var settingsState;
 var settingsPanelState;
 
@@ -42,5 +41,5 @@ double avoidOthersFactor = 1.70;
 
 int cameraBoidIndex = 0;
 double cameraDirection = -1.0;
-bool boidCameraOnOff = false;
+bool boidCameraOnOff = true;
 bool flyCamOn = false;

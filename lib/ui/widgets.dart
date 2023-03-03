@@ -76,7 +76,7 @@ class BoidSettingsState extends State<BoidSettings> {
     return Material(
         color: Colors.transparent,
         child: Container(
-            width: 280.0,
+            width: 282.0,
             decoration: BoxDecoration(
                 color: Colors.deepPurple,
                 borderRadius: BorderRadius.circular(4)
@@ -250,12 +250,12 @@ class BoidSettingsState extends State<BoidSettings> {
                         children: [Text('Zoom', style: textStyleWhite),
                           Slider(
                             activeColor: Colors.deepOrange,
-                            value: log(myGame.viewDistance)/(log(maxViewingDistance)/99)+1,
+                            value: log(myGame.camera.viewingDistance)/(log(maxViewingDistance)/99)+1,
                             max: 100,
                             min: 1,
                             onChanged: (double v) {
                               setState(() {
-                                myGame.viewDistance =  pow(exp(log(maxViewingDistance)/99), v-1).ceilToDouble();
+                                myGame.camera.viewingDistance =  pow(exp(log(maxViewingDistance)/99), v-1).ceilToDouble();
                               });
                           },
                         )]),
@@ -265,7 +265,7 @@ class BoidSettingsState extends State<BoidSettings> {
                       children: [
                         Text( 'Boids: $countBoids', style: textStyleWhite),
                         Text( 'FPS: ${fps.toStringAsFixed(1)}', style: textStyleWhite),
-                        Text( 'Polys: ${myGame.view.cntPolysRendered}/${myGame.view.cntPolys}', style: textStyleWhite)
+                        Text( 'Tris: ${myGame.view.cntPolysRendered}/${myGame.view.cntPolys}', style: textStyleWhite)
                       ],
                     ),
                     Row(

@@ -6,8 +6,12 @@ import 'dart:ui';
 import 'package:boids/models.dart';
 import 'package:flame/components.dart';
 import 'package:simple3d/simple3d.dart';
+
+import 'boidbucket.dart';
 import 'globals.dart';
-import 'main.dart';
+import 'my-game.dart';
+
+
 enum BoidType {
   BOID_BIRDIE,
   BOID_WEDGE,
@@ -89,6 +93,7 @@ class Boid extends Component  {
     Vector3 p = pos;
     pos += velocity * dt;
     updateBuckets(p, pos);
+
   }
 
 
