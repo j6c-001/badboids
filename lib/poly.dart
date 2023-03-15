@@ -1,3 +1,4 @@
+/*
 import 'dart:ui';
 
 import 'package:boids/display.dart';
@@ -55,3 +56,4 @@ List<Poly> makeModel(List<List> polys, bool wireFrame, {bool swap = false}) {
     return Poly(pts, color, wireFrame);
   }).toList();
 }
+*/

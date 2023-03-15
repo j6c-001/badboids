@@ -24,17 +24,23 @@ dependencies:
   flutter:
     sdk: flutter
 
+
   flame: 1.1.1
-  collection: 1.17.0
+  collection: 1.17.1
   url_launcher: ^6.1.9
+
+
+  simple3d:
+    path: ../pkgs/simple3d
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
+
+
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -44,3 +50,11 @@ flutter:
 
   #
   uses-material-design: true
+
+  assets:
+    - assets/img/bg.bmp
+    - assets/sounds/sample.mp3
+
+  shaders:
+    - assets/shaders/boid.frag
+    - assets/shaders/bkgd.frag
