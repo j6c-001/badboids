@@ -25,9 +25,10 @@ dependencies:
     sdk: flutter
 
 
-  flame: 1.1.1
+  flame: 1.6.0
   collection: 1.17.1
   url_launcher: ^6.1.9
+  flutter_dropzone: ^3.0.5
 
 
   simple3d:
@@ -54,6 +55,7 @@ flutter:
   assets:
     - assets/img/bg.bmp
     - assets/sounds/sample.mp3
+
 
   shaders:
     - assets/shaders/boid.frag

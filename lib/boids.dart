@@ -74,6 +74,8 @@ class Boid extends Component  {
     return aGem;
   }
 
+
+  Vector3 noise = Vector3.zero();
   @override
   void update(double dt) {
 
@@ -82,7 +84,10 @@ class Boid extends Component  {
     }
 
     updateSteering();
+
     velocity.add(steeringForce);
+    noise =  noise * .95  +(Vector3.random()-Vector3(0.5, 0.5, 0.5)) *  0.05;
+    velocity.add(noise);
     velocity.add(bounds());
 
     if (velocity.length2 > maxSpeed * maxSpeed ) {
@@ -93,7 +98,6 @@ class Boid extends Component  {
     Vector3 p = pos;
     pos += velocity * dt;
     updateBuckets(p, pos);
-
   }
 
 
@@ -175,45 +179,58 @@ class Boid extends Component  {
 
   Vector3 temp = Vector3.zero();
 
+  Vector3 aimForCenterOfMass = Vector3.zero();
+  Vector3 matchVelocity = Vector3.zero();
+  Vector3 avoidOthers = Vector3.zero();
 
+  int batchIndex  = 0;
+  int batchSize = 10;
   void updateSteering() {
-    Vector3 aimForCenterOfMass = Vector3.zero();
-    Vector3 matchVelocity = Vector3.zero();
-    Vector3 avoidOthers = Vector3.zero();
-
 
     int cnt = 0;
     int acnt = 0;
 
     final vb = visibleBoids;
-    BoidWrapper? b = vb.first;
+    if( vb.isEmpty) {
+      return;
+    }
+
+    BoidWrapper b = vb.first;
+
+    aimForCenterOfMass.setZero();
+    matchVelocity.setZero();;
+    avoidOthers.setZero();
 
     int i = 0;
+    int vizLimit = min(vb.length-1, batchIndex + batchSize);
     double d = 0;
     int otherCnt = 0;
 
-    while (i <vb.length && b != null && i < 100) {
+    for( i = batchIndex ; i< vizLimit; ++i) {
       d = (b.boid.pos-pos).length2;
       if ( d > 0 && d < visibility*visibility) {
-        cnt++;
+        ++cnt;
         if(type == b.boid.type) {
           aimForCenterOfMass.add(b.boid.pos);
           matchVelocity.add(b.boid.velocity);
         } else if (type == BoidType.BOID_BIRDIE) {
-          otherCnt++;
+          ++otherCnt;
           avoidOthers.add((b.boid.pos - pos) * otherCnt.toDouble());
           matchVelocity.sub(b.boid.velocity);
         }
 
         if ( d < 30 * 30) {
-          acnt++;
+          ++acnt;
           avoidOthers.add((b.boid.pos - pos).normalized()/d);
         }
       }
 
-      b = b.next;
-      i++;
+      b = b.next!; // guaranteed not null because iterating over the length-1 of the list;
+    }
 
+    batchIndex += batchSize;
+    if ( batchIndex >= vb.length-1 ) {
+      batchIndex = 0;
     }
     steeringForce.setZero();
     if (cnt > 0 ) {
@@ -250,3 +267,4 @@ class BoidWrapper  with LinkedListEntry<BoidWrapper> {
   Boid boid;
   BoidWrapper(this.boid);
 }
+

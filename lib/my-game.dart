@@ -2,7 +2,7 @@
 
 import 'dart:ui';
 
-import 'package:boids/audio-analyser.dart';
+import 'package:boids/audio-manager.dart';
 import 'package:boids/shader-manager.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -27,7 +27,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
 
   final boidBuckets = BoidBucket();
 
-  AudioAnalyser audioAnalyser = AudioAnalyser();
+  AudioManager audioManager = AudioManager();
   ShaderManager shaderManager = ShaderManager();
 
   Paint bkPaint = Paint();
@@ -69,7 +69,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
 
     }
 
-    await audioAnalyser.init();
+    await audioManager.init();
     await shaderManager.init();
 
     return super.onLoad();
@@ -81,10 +81,10 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
     lifecycle.processQueues();
     children.updateComponentList();
 
-    audioAnalyser.update();
+    audioManager.update();
     shaderManager.update(dt);
 
-    spawnBoidsIfNecessary();
+    spawnBoidsIfNecessary(dt);
 
     if (needsReset) {
       reset();
@@ -97,13 +97,16 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
         c.update(dt);
       }
     }
+
     needsMixReset = false;
 
     settingsState?.setState(() {
 
     });
 
-    if (et > 2.0) {
+
+
+    if (et > .1) {
       fps = fc / et;
       et = 0;
       fc = 0;
@@ -113,7 +116,19 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
     }
   }
 
-  void spawnBoidsIfNecessary() {
+  void spawnBoidsIfNecessary(double dt) {
+
+    if(autoSpawnTimeRemainingInSeconds > 0) {
+      if (fps > targetFPS - 1.0 && numberOfBoids < maxBoids - 1) {
+        numberOfBoids += 1;
+      }
+
+      if (fps < targetFPS - 1.0 && numberOfBoids > 1) {
+        numberOfBoids -= 1;
+      }
+      autoSpawnTimeRemainingInSeconds -= dt;
+    }
+
      int ba = numberOfBoids - boids.length;
 
     while (ba > 0) {
@@ -138,6 +153,7 @@ class MyGame extends Component with Game, PanDetector, KeyboardEvents {
 
     bkPaint.shader = shaderManager.bkShader;
     view.paint.shader= shaderManager.boidsShader;
+    view.blendMode = BlendMode.multiply;
 
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.x, size.y),

@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 
 import '../globals.dart';
 
@@ -10,8 +12,7 @@ class SettingsWidget extends StatefulWidget  {
   SettingsWidget({Key? key}) : super(key: key);
   @override
   SettingsWidgetState createState()  {
-    settingsPanelState = SettingsWidgetState();
-    return settingsPanelState;
+    return SettingsWidgetState();
   }
 }
 
@@ -21,9 +22,11 @@ class SettingsWidgetState extends State<SettingsWidget> {
   OverlayEntry? settingsPanel;
 
 
+
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_)=>showSettings());
+    settingsPanelState = this;
   }
 
 
@@ -31,10 +34,11 @@ class SettingsWidgetState extends State<SettingsWidget> {
   void showSettings() {
     final o = Overlay.of(context);
 
-    settingsPanel =  OverlayEntry(builder: (ctx)=>Positioned(left: 20, top: 20, child: BoidSettings() ),maintainState: true);
-    settingsButton = OverlayEntry(builder: (ctx)=>Positioned(left: 20, top: 20, child:  IconButton(
+    settingsPanel =  OverlayEntry(builder: (ctx)=> Positioned(left: 20, top: 20, child: BoidSettings() ),maintainState: true);
+    settingsButton = OverlayEntry(builder: (ctx)=> Positioned(left: 20, top: 20, child: IconButton(
         color: Colors.deepOrange,
-        icon: Icon(Icons.settings), onPressed: (){
+        icon: Icon(Icons.settings),
+        onPressed: (){
       settingsButton?.remove();
       o.insert(settingsPanel!);
     }), ), maintainState: true);
@@ -73,6 +77,9 @@ class BoidSettings extends StatefulWidget {
 class BoidSettingsState extends State<BoidSettings> {
   @override
   Widget build(BuildContext context) {
+
+
+
     return Material(
         color: Colors.transparent,
         child: Container(
@@ -81,7 +88,7 @@ class BoidSettingsState extends State<BoidSettings> {
                 color: Colors.deepPurple,
                 borderRadius: BorderRadius.circular(4)
             ),
-            child: Padding(
+            child:  Padding(
               padding: EdgeInsets.all(10),
               child:Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -95,6 +102,27 @@ class BoidSettingsState extends State<BoidSettings> {
                               onPressed: () =>  _launchInBrowser(Uri(scheme: 'https', host: 'www.github.com', path: 'j6c-001/badboids')),
                               label: Text('Bad Boids', style: textStyleWhiteBold),
                               icon: Icon(Icons.open_in_browser_sharp, color: Colors.deepOrange),
+                          ),
+                          IconButton(
+
+                            tooltip: 'Turn Sound ${myGame.audioManager.playing ? 'Off' : 'On'}',
+                            color: Colors.deepOrange,
+                            onPressed: myGame.play ? () {
+                              setState(() {
+                                myGame.audioManager.toggle();
+                              });
+                            } : null,
+                            icon: Icon(myGame.audioManager.playing ? Icons.volume_up : Icons.volume_off),
+                          ),
+                          IconButton(
+                            tooltip: '${musicControlled ? 'Disable' : 'Enable'} music controlled boids',
+                              color: Colors.deepOrange,
+                              onPressed: () {
+                                setState(() {
+                                  musicControlled = !musicControlled;
+                                });
+                              },
+                              icon: Icon(musicControlled ? Icons.music_note_sharp : Icons.music_off_sharp),
                           ),
                           IconButton(
                               color: Colors.deepOrange,
@@ -125,10 +153,11 @@ class BoidSettingsState extends State<BoidSettings> {
                             }),
                         IconButton(
                             tooltip: 'Switch to ' + (cameraDirection < 0 ? 'back facing camera' : 'front facing camera'),
-                            icon: Icon(cameraDirection < 0 ? Icons.arrow_forward_sharp : Icons.arrow_back_sharp),
+                            icon: Icon(cameraDirection > 0 ? Icons.arrow_forward_sharp : Icons.arrow_back_sharp),
                             color: Colors.deepOrange,
                             onPressed: () {
                               cameraDirection *= -1.0;
+                              cameraCut = true;
                             }),
 
                         IconButton(
@@ -138,6 +167,7 @@ class BoidSettingsState extends State<BoidSettings> {
                             disabledColor: Colors.grey,
                             onPressed: myGame.play ? null : () {
                               myGame.play = true;
+                              myGame.audioManager.playIfNecessary();
                             }
                         ),
                         IconButton(
@@ -147,6 +177,8 @@ class BoidSettingsState extends State<BoidSettings> {
                             color: Colors.deepOrange,
                             onPressed: myGame.play ? () {
                               myGame.play = false;
+                              myGame.audioManager.pauseAndRemember();
+
                             } : null
                         ),
                         IconButton(
@@ -160,6 +192,22 @@ class BoidSettingsState extends State<BoidSettings> {
 
                       ],
                     ),
+
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('Cohesion', style: textStyleWhite), Slider(
+                          activeColor: Colors.deepOrange,
+                          value: cohesionFactor,
+                          max: 3,
+                          min: 0,
+                          divisions: 100,
+                          onChanged: (double v) {
+                            setState(() {
+                              cohesionFactor = v;
+                            });
+                          },
+
+                        )]),
 
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -192,21 +240,7 @@ class BoidSettingsState extends State<BoidSettings> {
 
                         )]),
 
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [Text('Cohesion', style: textStyleWhite),Slider(
-                          activeColor: Colors.deepOrange,
-                          value: cohesionFactor,
-                          max: 3,
-                          min: 0,
-                          divisions: 100,
-                          onChanged: (double v) {
-                            setState(() {
-                              cohesionFactor = v;
-                            });
-                          },
 
-                        )]),
 
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -275,10 +309,82 @@ class BoidSettingsState extends State<BoidSettings> {
                         Text('Wedges: $countWedges', style: textStyleWhite),
                         Text('Gems: $countGems', style: textStyleWhite),
                       ],
-                    )
+                    ),
+                    Divider(),
+                    ... (!musicControlled ? [] : [
+                    Row(  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Parameter', style: colHeader),
+                            Text('Band', style: colHeader),
+                            Tooltip(
+                                message: 'Use the sliders below to configure the influence each frequency band Low/Mid/High has on the corresponding flock parameter (Cohesion/Alignment/Avoidance)',
+                                child: Icon(Icons.info_outline, color: Colors.orange),
+
+                            )
+                          ]
+                    ),
+                    Divider(thickness: 1, indent: 5),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('Cohesion', style: textStyleWhite),
+                          RangeSlider(
+                            inactiveColor: Colors.deepOrange,
+                            activeColor: Colors.tealAccent,
+                            values: RangeValues(bassMixCohesion, bassMixCohesion + midMixCohesion),
+                            onChanged: (RangeValues v) {
+                              setState(() {
+                                bassMixCohesion = v.start;
+                                midMixCohesion = v.end - v.start;
+                                highMixCohesion = 1 - v.end;
+                              });
+                            },
+                          )]),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('Alignment', style: textStyleWhite),
+                          RangeSlider(
+                            inactiveColor: Colors.deepOrange,
+                            activeColor: Colors.tealAccent,
+                            values: RangeValues(bassMixAlignment, bassMixAlignment + midMixAlignment),
+                            onChanged: (RangeValues v) {
+                              setState(() {
+                                bassMixAlignment = v.start;
+                                midMixAlignment = v.end - v.start;
+                                highMixAlignment = 1 - v.end;
+                              });
+                            },
+                          )]),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('Avoidance', style: textStyleWhite),
+                          RangeSlider(
+                            inactiveColor: Colors.deepOrange,
+                            activeColor: Colors.tealAccent,
+                            values: RangeValues(bassMixAvoidance, bassMixAvoidance + midMixAvoidance),
+                            onChanged: (RangeValues v) {
+                              setState(() {
+                                bassMixAvoidance = v.start;
+                                midMixAvoidance = v.end - v.start;
+                                highMixAvoidance = 1 - v.end;
+                              });
+                            },
+                          )]),
+                    ]),
+                 /*   Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('TracK ${myGame.audioManager.trackName}'),
+                        IconButton(onPressed: {
+
+                        }, icon: Icon( Icons.restore_page_outlined) )
+                      ]
+                    )*/
+
 
                   ]),
-            )));
+            )
+    ));
   }
 }
 
@@ -290,4 +396,33 @@ Future<void> _launchInBrowser(Uri url) async {
   )) {
     throw Exception('Could not launch $url');
   }
+}
+
+Widget dropzone1(BuildContext context) {
+  DropzoneViewController? dzCtrl;
+  return Builder(
+      builder: (context) =>
+          SizedBox.square(dimension: 40, child: DropzoneView(
+            operation: DragOperation.copy,
+            cursor: CursorType.grab,
+            onCreated: (ctrl) => dzCtrl = ctrl,
+            onLoaded: () => print('Zone 1 loaded'),
+            onError: (ev) => print('Zone 1 error: $ev'),
+            onHover: () {
+              print('Zone 1 hovered');
+            },
+            onLeave: () {
+              print('Zone 1 left');
+            },
+            onDrop: (ev) async {
+              print('Zone 1 drop: ${ev.name}, $dzCtrl');
+              myGame.audioManager.trackName = ev.name;
+              final bytes = await dzCtrl?.getFileData(ev);
+              myGame.audioManager.loadMusic(bytes!.buffer);
+            },
+            onDropMultiple: (ev) async {
+              print('Zone 1 drop multiple: $ev');
+            },
+          ),
+          ));
 }

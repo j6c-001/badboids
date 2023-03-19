@@ -1,50 +1,16 @@
-# Bad Boids -- Named in honour of the classic teaching example.
+# badboids
 
-## A little flocking demo to play with defining simple 3d models, and drawing them.
-* Hit the settings icom to control flocking parameters # boids, zoom and camera controls.
+A new Flutter project.
 
-Demo: https://j6c-001.github.io/badboids
+## Getting Started
 
-![Screenshot](bb1.png)
+This project is a starting point for a Flutter application.
 
-Model definition looks like this:
-```
-class Wedge extends Model {
-  List getModel() {
-    return makeModel([
-      [
-        Colors.red,
-        [
-          [-2, 0, 0],
-          [2, 0, 0],
-          [0, 2, 0]
-        ]
-      ],
-      [
-        Colors.green,
-        [
-          [-2, 0, 0],
-          [2, 0, 0],
-          [1, 1, -6]
-        ]
-      ],
-      [
-        Colors.amber,
-        [
-          [-2, 0, 0],
-          [0, 2, 0],
-          [1, 1, -6]
-        ]
-      ],
-      [
-        Colors.blue,
-        [
-          [2, 0, 0],
-          [0, 2, 0],
-          [1, 1, -6]
-        ]
-      ]
-    ], false);
-  }
-}
-```
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

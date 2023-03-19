@@ -30,10 +30,15 @@ class GameCamera {
     Boid cameraTargetBoid = cameraBoidIndex <boids.length ? boids[cameraBoidIndex] : boids.last;
     if (boidCameraOnOff) {
 
-      Vector3 newPos = (cameraTargetBoid.pos + cameraTargetBoid.velocity.normalized() * viewingDistance);
-      Vector3 newTarget = cameraTargetBoid.pos -
-          cameraTargetBoid.velocity.normalized() * cameraDirection * .1;
-      pos = (pos * .95) + (newPos * .05);
+      Vector3 offsetDir = (pos-cameraTargetBoid.pos);
+      Quaternion q= Quaternion.axisAngle(Vector3(0,-1,0), orbitAngle);
+      q.rotate(offsetDir);
+      offsetDir.normalize();
+      Vector3 newPos = (cameraTargetBoid.pos  + offsetDir * viewingDistance);
+
+      orbitAngle = 0;
+      Vector3 newTarget = cameraTargetBoid.pos;
+      pos = (pos * .98) + (newPos * .02);
       target = (target * .95) + (newTarget * .05);
     } else {
       pos.x = viewingDistance * cos(orbitAngle);
