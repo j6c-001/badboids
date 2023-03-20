@@ -7,107 +7,104 @@ import 'package:simple3d/simple3d.dart';
 import 'package:simple3d/vertex_model.dart';
 
 
-/*final aWedge =  makeVertexModel([
+final aBox =  makeVertexModel([
   [
-    [-1.0,-1.0,-1.0], // triangle 1 : begin
-    [-1.0,-1.0, 1.0],
-    [-1.0, 1.0, 1.0], // triangle 1 : end
-    [1.0, 1.0,-1.0], // triangle 2 : begin
-    [-1.0,-1.0,-1.0],
-    [-1.0,1.0,-1.0], // triangle 2 : end
-    [1.0,-1.0, 1.0,],
-    [-1.0,-1.0,-1.0],
-    [1.0,-1.0,-1.0,],
-    [1.0, 1.0,-1.0,],
-    [1.0,-1.0,-1.0,],
-    [-1.0,-1.0,-1.0],
-    [-1.0,-1.0,-1.0],
-    [-1.0, 1.0, 1.0],
-    [-1.0, 1.0,-1.0],
-    [1.0,-1.0, 1.0],
-    [-1.0,-1.0, 1.0],
-    [-1.0,-1.0,-1.0],
-    [-1.0, 1.0, 1.0],
-    [-1.0,-1.0, 1.0],
-    [1.0,-1.0, 1.0],
-    [1.0, 1.0, 1.0],
-    [1.0,-1.0,-1.0],
-    [1.0, 1.0,-1.0],
-    [1.0,-1.0,-1.0],
-    [1.0, 1.0, 1.0],
-    [1.0,-1.0, 1.0],
-    [1.0, 1.0, 1.0],
-    [1.0, 1.0,-1.0],
-    [-1.0, 1.0,-1.0],
-    [1.0, 1.0, 1.0],
-    [-1.0, 1.0,-1.0],
-    [-1.0, 1.0, 1.0],
-    [1.0, 1.0, 1.0],
-    [-1.0, 1.0, 1.0],
-    [1.0,-1.0, 1.0]
+      [-1, 1, -1], // 0
+      [ 1, 1, -1], // 1
+      [ 1, 1,  1], // 2
+      [-1, 1,  1], // 3
+      [-1, -1, -1], // 4
+      [ 1, -1, -1], // 5
+      [ 1, -1,  1], // 6
+      [-1, -1,  1], // 7
   ]    ,  [
     [Colors.red, [0, 1, 2]],
-    [Colors.green, [3,4,5]],
-    [Colors.red, [6,7, 8]],
-    [Colors.green, [9, 10, 11]],
-    [Colors.red, [12, 13, 14]],
-    [Colors.green, [15, 16, 17]],
-    [Colors.red, [18, 19, 20]],
-    [Colors.green, [21, 22, 23]],
-    [Colors.red, [24, 25, 26]],
-    [Colors.green, [27, 28, 29]],
-    [Colors.red, [30, 31, 32]],
-    [Colors.green, [33, 34, 35]],
-    [Colors.red, [36, 37, 38]],
-    [Colors.green, [39, 40, 41]],
-    [Colors.red, [42, 43, 44]],
-    [Colors.green, [45, 46, 47]]
+    [Colors.green, [0,2,3]],
+    [Colors.red, [0,1, 4]],
+    [Colors.green, [1, 4, 5]],
+    [Colors.red, [0, 3, 7]],
+    [Colors.green, [0, 4, 6]],
+    [Colors.red, [2, 3, 6]],
+    [Colors.green, [3, 6, 7]],
+    [Colors.red, [4, 6, 7]],
+    [Colors.green, [4, 5, 6]],
+    [Colors.red, [1, 2, 6]],
+    [Colors.green, [1, 2, 5]],
   ]
-])*/
+]);
 final aWedge = makeVertexModel([
     [
-      [0,0,1],
-      [0,1,0],
-      [0,0,-1],
-      [-1,0,0],
+      [ 0, -1, 0],
+      [ 0, 0, -3],
+      [ 1, 0,  1],
+      [-1, 0,  1]
     ],
     [
-      [Colors.red, [0,1,3]],
-      [Colors.green, [2,1,3]],
-      [Colors.deepPurple, [0,1,2]],
-      [Colors.blue, [0,2,3]],
+      [Colors.red,  [0,2,3]],
+      [Colors.green, [0,1,3]],
+      [Colors.yellowAccent, [0,1,2]],
+      [Colors.indigoAccent, [1,2,3]],
     ]
 ]);
 
-final r2 = sqrt(2.0);
+final r2 = sqrt(2.0)/2;
 
 final aGem = makeVertexModel([
   [
-    [-1,0,0],
-   [-r2,0,r2],
-    [r2,0,r2],
-    [1,0,0],
-    [r2,0,-r2],
-    [-r2,0,-r2],
-    [0,1,0],
-    [0,-1,0],
+    [0,1, 0],
+    [r2, r2, 0],
+    [1, 0, 0],
+    [r2, -r2, 0],
+    [0, -1, 0],
+    [-r2, -r2, 0],
+    [-1, 0, 0],
+    [-r2, r2, 0],
+    [0, 0, -2],
+    [0, 0,  1],
+
   ],
     [
-      [Colors.green, [0,6, 1]],
-      [Colors.red, [1,6, 2]],
-      [Colors.blue, [2,6, 3]],
-      [Colors.deepOrange, [3,6, 4]],
-      [Colors.amber, [4,6, 5]],
-      [Colors.indigo, [5,6, 0]],
-      [Colors.green, [0,7, 1]],
-      [Colors.red, [1,7, 2]],
-      [Colors.blue, [2,7, 3]],
-      [Colors.deepOrange, [3,7, 4]],
-      [Colors.amber, [4,7, 5]],
-      [Colors.indigo, [5,7, 0]],
+      [Colors.green, [0,1, 8]],
+      [Colors.red, [1,2, 8]],
+      [Colors.blue, [2,3, 8]],
+      [Colors.deepOrange, [3,4, 8]],
+      [Colors.amber, [4, 5, 8]],
+      [Colors.indigo, [5,6, 8]],
+      [Colors.green, [6,7, 8]],
+      [Colors.cyanAccent, [7,0, 8]],
+      [Colors.green, [0,1, 9]],
+      [Colors.red, [1,2, 9]],
+      [Colors.blue, [2,3, 9]],
+      [Colors.deepOrange, [3,4, 9]],
+      [Colors.amber, [4, 5, 9]],
+      [Colors.indigo, [5,6, 9]],
+      [Colors.green, [6,7, 9]],
+      [Colors.cyanAccent, [7,0, 9]],
+
     ]
   ]
 );
 
 
-final aBird = aWedge;
+final aBird = makeVertexModel([
+[
+  [0, 0, -1],
+  [0, 1, 0],
+  [0, 0, 4],
+  [-.5, 0, .5],
+  [-2, 0, 1],
+  [.5, 0, .5],
+  [2, 0, 1]
+],  [
+    [Color(0xFFF78E69), [0,1, 2]],
+    [Color(0xFFF78E69), [0,1, 4]],
+    [Color(0xFFF78E69), [4, 1, 3]],
+    [Color(0xFFF78E69), [6,1, 5]],
+    [Color(0xFF51513D), [3,2, 1]],
+    [Color(0xFF51513D), [5,2, 1]],
+    [Color(0xFFE3DC95), [0,3, 2]],
+    [Color(0xFFE3DC95), [0,5, 2]],
+    [Color(0xFFE3DCC2), [0,4, 3]],
+    [Color(0xFFE3DCC2), [0,6, 5]],
+
+]]);

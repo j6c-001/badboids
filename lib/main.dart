@@ -1,23 +1,9 @@
-
-import 'dart:collection';
-import 'dart:math';
-import 'dart:ui';
-
-import 'package:boids/boids.dart';
-import 'package:boids/display.dart';
-import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:simple3d/display.dart';
-import 'package:simple3d/simple3d.dart';
 
-import 'camera.dart';
 import 'globals.dart';
 import 'my-game.dart';
 import 'ui/widgets.dart';
-
 
 
 void main() {
@@ -26,7 +12,6 @@ void main() {
     FlutterApp()
   );
 }
-
 
 class FlutterApp extends StatelessWidget {
   @override
@@ -56,11 +41,3 @@ class FlutterApp extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-

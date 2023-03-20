@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:boids/audio-analyser.dart';
+import 'package:boids/audio-manager.dart';
 import 'package:boids/globals.dart';
 
 class ShaderManager {
@@ -24,22 +24,49 @@ class ShaderManager {
 
   double elapsedTime = 0;
   update(double dt) {
-    elapsedTime += dt;
-    bkShader.setFloat(0, myGame.size.x);
-    bkShader.setFloat(1, myGame.size.y);
-    bkShader.setFloat(2, elapsedTime );
 
-    AudioAnalyser audioAnalyser = myGame.audioAnalyser;
+    if(!myGame.play) {
+      return;
+    }
+
+    elapsedTime += dt;
+
+
+
+
+    AudioManager audioAnalyser = myGame.audioManager;
     bass = (.95*bass + .05*audioAnalyser.bass);
     mid = (.95*mid + .05*audioAnalyser.mid);
     high = (.95*high + .05*audioAnalyser.high);
 
-    avoidOthersFactor =  3- 3* bass*mid;
-    cohesionFactor=  3 * high;
-    alignmentFactor = 3 * mid * high;
+    if(musicControlled) {
+      avoidOthersFactor = 3 - 3 * (bass* bassMixAvoidance + mid* midMixAvoidance + high* highMixAvoidance);
+      cohesionFactor = 3 * (bass*bassMixCohesion + mid*midMixCohesion + high* highMixCohesion);
+      alignmentFactor = 3 * (bass*bassMixAlignment + mid*midMixAlignment + high*highMixAlignment);
+    }
 
-    bkShader.setFloat(3, bass);
-    bkShader.setFloat(4, mid);
-    bkShader.setFloat(5,  high);
+
+    updateShader(boidsShader);
+    updateShader(bkShader);
+
+  }
+
+  void updateShader(FragmentShader shader) {
+    shader.setFloat(0, myGame.size.x);
+    shader.setFloat(1, myGame.size.y);
+    shader.setFloat(2, elapsedTime );
+
+    shader.setFloat(3, myGame.camera.pos.x);
+    shader.setFloat(4, myGame.camera.pos.y);
+    shader.setFloat(5, myGame.camera.pos.z);
+
+    shader.setFloat(6, myGame.camera.target.x);
+    shader.setFloat(7, myGame.camera.target.y);
+    shader.setFloat(8, myGame.camera.target.z);
+
+    shader.setFloat(9, bass);
+    shader.setFloat(10, mid);
+    shader.setFloat(11,  high);
+
   }
 }

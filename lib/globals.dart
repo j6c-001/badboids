@@ -9,8 +9,9 @@ var settingsState;
 var settingsPanelState;
 
 // styling
-final textStyleWhiteBold = TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
-final textStyleWhite = TextStyle(color: Colors.white);
+const  textStyleWhiteBold = TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
+const textStyleWhite = TextStyle(color: Colors.white);
+const colHeader = TextStyle(color: Colors.orange);
 
 
 // Simulation and bookkeeping settings.
@@ -39,7 +40,28 @@ double cohesionFactor =  0.50;
 double alignmentFactor = 0.85;
 double avoidOthersFactor = 1.70;
 
+// when music controlled use these influences
+
+bool musicControlled = true;
+
+double bassMixCohesion = .33;
+double bassMixAlignment = .33;
+double bassMixAvoidance = .33;
+
+double midMixCohesion = .33;
+double midMixAlignment = .33;
+double midMixAvoidance = .33;
+
+double highMixCohesion = .33;
+double highMixAlignment = .33;
+double highMixAvoidance = .33;
+
 int cameraBoidIndex = 0;
-double cameraDirection = -1.0;
+double cameraDirection = 1.0;
+bool cameraCut  = true;
 bool boidCameraOnOff = true;
 bool flyCamOn = false;
+
+
+double targetFPS = 60.0;
+double autoSpawnTimeRemainingInSeconds = 20.0;
