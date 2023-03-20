@@ -1,16 +1,11 @@
-# badboids
+# Bad Boids -- Named in honour of the classic teaching example.
 
-A new Flutter project.
+## A little flocking demo to demo the simple 3d package
+* Hit the settings icom to control flocking parameters # boids, zoom and camera controls.
+* Music Credits coming.
+* Shader Credit Coming
 
-## Getting Started
+Demo: https://j6c-001.github.io/badboids
 
-This project is a starting point for a Flutter application.
+![Screenshot](bb1.png)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
