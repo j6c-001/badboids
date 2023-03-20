@@ -3,7 +3,7 @@
 ## A little flocking demo  of  simple 3d package
 * Hit the settings icon to control flocking parameters # boids, zoom and camera controls.
 * Music Credits coming.
-* Shader Credit Coming
+* Shader Credits Coming
 
 Demo: https://j6c-001.github.io/badboids
 
